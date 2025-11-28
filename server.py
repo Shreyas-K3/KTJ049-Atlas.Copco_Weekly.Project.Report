@@ -1,73 +1,84 @@
-import json
-import os
+import streamlit as st
 
-FILE_PATH = "project_status.json"
+st.set_page_config(
+    page_title="Atlas Copco - Admin / Server",
+    page_icon="🛠️",
+    layout="centered",
+)
 
-DEFAULT_DATA = {
-    "project_name": "Project Atlas Copco",
-    "project_code": "ATLAS2025",
+st.title("🛠️ Admin / Server – Access Settings")
+st.caption("Set pre-approved names and the project access code. The client app will use these for login.")
 
-    # Pre-approved names who can log into the client dashboard
-    "allowed_names": [
-        "Shreyas",
-        "Client User 1",
-        "Client User 2"
-    ],
+# --- Safe import of data_store ---
+try:
+    from data_store import load_data, save_data, DEFAULT_DATA
+except Exception as e:
+    st.error(
+        "❌ Could not import `data_store.py`.\n\n"
+        "Make sure a file named **data_store.py** exists in the same folder as `server.py`."
+    )
+    st.code(str(e))
+    st.stop()
 
-    "project_completion": 83,      # %
-    "project_status_label": "On Track",
+# --- Load current data safely ---
+try:
+    data = load_data()
+except Exception as e:
+    st.warning("⚠️ Could not load existing data. Using default settings.")
+    st.code(str(e))
+    data = DEFAULT_DATA.copy()
 
-    "pending_rfis": 6,
-    "rfis_label": "Non-Critical",
+st.markdown("---")
 
-    "timeline_days": 4,
+st.subheader("🔐 Access Control")
 
-    "viewer_link": "https://autode.sk/4rgD3cG",
-    "rfi_sheet_link": "https://docs.google.com/spreadsheets/d/1RDRCvOWoVXIMcnYJCmDs8JvboJvep7j-/edit?usp=drive_link&ouid=101341274280914933041&rtpof=true&sd=true",
+with st.form("access_form", clear_on_submit=False):
+    # Project access code
+    project_code = st.text_input(
+        "Project Access Code",
+        value=data.get("project_code", "ATLAS2025"),
+        help="Users must enter this code on the client app to access the dashboard."
+    )
 
-    "phe_progress": 100,  # %
-    "elec_progress": 100, # %
-    "ff_progress": 80,    # %
-    "mech_progress": 80,  # %
+    # Pre-approved names list
+    allowed_names_str = "\n".join(data.get("allowed_names", []))
+    allowed_names_input = st.text_area(
+        "Pre-approved Names (one per line)",
+        value=allowed_names_str,
+        height=200,
+        help="Only these names will be allowed to log in on the client dashboard."
+    )
 
-    "notes_markdown": """**Action Required:**
-- ⏰ **6 non-critical RFIs** are awaiting responses
-- 🔍 Please review the model viewer and provide feedback
-- ✍️ Update the RFI sheet to maintain project momentum
-""",
+    st.markdown(
+        "<small>🔎 Name on client side must exactly match one of the lines above (case-insensitive check).</small>",
+        unsafe_allow_html=True,
+    )
 
-    "days_1_2": "Complete FF and MECH models",
-    "days_1_2_sub": "Target: 100% completion of remaining models",
+    # CLEAR submit button
+    submitted = st.form_submit_button("✅ SAVE ACCESS SETTINGS")
 
-    "days_3_4": "Initiate coordination phase",
-    "days_3_4_sub": "Begin cross-discipline integration",
+if submitted:
+    # Clean and split names
+    names_list = [
+        n.strip() for n in allowed_names_input.splitlines()
+        if n.strip()
+    ]
 
-    "email_body": """**Team,**
+    data["project_code"] = project_code.strip()
+    data["allowed_names"] = names_list
 
-Below is this week's status update for **Project Atlas Copco**.  
-Progress remains steady and we are tracking toward the upcoming milestone.
+    try:
+        save_data(data)
+        st.success("✅ Access settings saved successfully!")
+        st.write("**Current project code:**", data["project_code"])
+        st.write("**Pre-approved names:**", data["allowed_names"])
+    except Exception as e:
+        st.error("❌ Failed to save settings.")
+        st.code(str(e))
 
-All metrics and links are provided above in the dashboard format for easy access and tracking."""
-}
-
-
-def load_data():
-    """Load project data from JSON; fall back to defaults and merge keys."""
-    if os.path.exists(FILE_PATH):
-        try:
-            with open(FILE_PATH, "r", encoding="utf-8") as f:
-                stored = json.load(f)
-        except Exception:
-            return DEFAULT_DATA.copy()
-
-        data = DEFAULT_DATA.copy()
-        data.update(stored)
-        return data
-
-    return DEFAULT_DATA.copy()
-
-
-def save_data(data: dict):
-    """Save project data to JSON."""
-    with open(FILE_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+st.markdown("---")
+st.info(
+    "✔️ Now, on the **client app**, login will only work if:\n"
+    "- Name is in the pre-approved list\n"
+    "- Project code matches the one you set here"
+)
