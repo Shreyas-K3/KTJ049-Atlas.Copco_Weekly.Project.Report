@@ -151,7 +151,8 @@ def app():
         curr_prog = st.text_area("Current Progress", value=project_data.get("current_progress", ""), height=150)
         next_plan = st.text_area("Next Week Plan", value=project_data.get("next_week_plan", ""), height=150)
 
-        submitted = st.form_submit_button("Submit/Update Project Data")
+        # Added key="project_submit_button" for robustness
+        submitted = st.form_submit_button("Submit/Update Project Data", key="project_submit_button")
 
         if submitted:
             if not p_code or not p_name:
