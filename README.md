@@ -1,47 +1,61 @@
-# Weekly Project Update App
+Weekly Project Update App (Streamlit & SQLite)
 
-A minimal, secure-enough project update dashboard built with Streamlit, SQLite, and GitHub.
+A minimal, visually impactful project update dashboard built with Streamlit, SQLAlchemy/SQLite, and GitHub for deployment.
 
-## 🚀 Quick Start
+🚀 Quick Start
 
-1.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+Install Dependencies:
 
-2.  **Run the App:**
-    ```bash
-    streamlit run streamlit_app.py
-    ```
+pip install -r requirements.txt
 
-3.  **Default Admin Flow:**
-    * Open the app.
-    * Open Sidebar (top left arrow) -> Select "Admin Panel".
-    * Create a new project (e.g., Code: `TEST001`, Name: `Alpha Tower`).
-    * Click "Update Project".
 
-4.  **Client Flow:**
-    * Switch Sidebar to "Client View".
-    * Enter Name and Project Code (`TEST001`).
-    * View Dashboard & Submit Comments.
+Add Initialization File: Ensure the file app/__init__.py (it can be empty) exists to make the app directory a Python package.
 
-## 📂 Folder Structure
-* `app/`: Core logic (Client, Admin, DB, Styling).
-* `data/`: Stores `app.db` (SQLite). **Note:** On Streamlit Cloud, this file is ephemeral unless you use third-party storage, but persists between soft reboots.
-* `streamlit_app.py`: Main entry point.
+Run the App:
 
-## 🎨 Styling
-* **Font:** Expects `AvantGarde.woff2` in `app/assets/fonts/`.
-* **Theme:** Enforced Dark Mode with Red/Black/White brand colors.
+streamlit run streamlit_app.py
 
-## ☁️ Deployment (Streamlit Cloud)
-1.  Push this repo to GitHub.
-2.  Go to [Streamlit Cloud](https://streamlit.io/cloud).
-3.  New App -> Select Repository.
-4.  Main file: `streamlit_app.py`.
-5.  Deploy!
 
-## ⚠️ Notes
-* **Project Code:** Stored in plain text. Do not use for highly sensitive passwords.
-* **Real-time:** Admin page polls every 10s if toggle is active.
-* **WebSocket Upgrade:** Search code for `TODO` to see where to implement websockets for true real-time.
+🔐 Access Credentials
+
+Client View: Requires a project code (set by the Admin) and client name.
+
+Admin Panel: Requires the hardcoded Admin Access Code.
+
+Default Admin Code: SECRET_ADMIN_123
+
+(It is highly recommended to change this in a production environment.)
+
+🎨 Visual Enhancements
+
+Meters: Circular HTML/CSS meters are used for visually tracking progress and days spent.
+
+Branding: Strong Dark Mode theme using Red/Black/White colors.
+
+Font: Requires AvantGarde.woff2 in app/assets/fonts/ for the custom font, with a fallback to system sans-serif.
+
+📂 Folder Structure
+
+app/: Core logic (Client, Admin, DB, Styling, Utilities).
+
+data/: Stores app.db (SQLite). Note: Exclude data/app.db from git, but ensure data/.gitkeep exists.
+
+streamlit_app.py: Main entry point and authentication router.
+
+☁️ Deployment (Streamlit Cloud)
+
+Push this repo to GitHub.
+
+Go to Streamlit Cloud, select your repo.
+
+Set Main file path to streamlit_app.py.
+
+Deploy!
+
+🚧 TODO: Real-time Upgrade Path
+
+For true real-time push notifications (avoiding the 10-second polling refresh on the Admin comments page), consider:
+
+WebSocket Microservice: Build a small, separate FastAPI service to handle WebSocket connections and database write triggers.
+
+Streamlit Component: Use a community component like streamlit-webrtc or streamlit-socketio to manage the WebSocket connection directly from the client side. The current DB polling is sufficient for moderate internal use but should be replaced for high concurrency.
