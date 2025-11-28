@@ -77,10 +77,11 @@ def app():
 
     # 2. Days Spent Meter (Red)
     with col_days:
+        # Note: If days_spent is 0, max_value in utils.py will handle the safety check.
         meter_html = create_circular_meter(
             label="Days Spent", 
             value=project.days_spent, 
-            max_value=project.days_spent if project.days_spent > 0 else 100, # Max value is dynamic, so meter shows 100% of current days spent vs self
+            max_value=project.days_spent, # Max value equals current value, making meter full (100%)
             color="#FF0000" # Red
         )
         st.markdown(meter_html, unsafe_allow_html=True)
@@ -112,10 +113,11 @@ def app():
 
     # --- Text Content with Roadmap Icon ---
     
-    st.subheader(f"{roadmap_svg(size='32')} Current Progress", unsafe_allow_html=True)
+    # FIX: Use st.markdown with a level 3 heading style (###) instead of st.subheader
+    st.markdown(f"### {roadmap_svg(size='32')} Current Progress", unsafe_allow_html=True)
     st.info(project.current_progress or "No updates yet.")
 
-    st.subheader(f"{roadmap_svg(size='32')} Next Week Plan", unsafe_allow_html=True)
+    st.markdown(f"### {roadmap_svg(size='32')} Next Week Plan", unsafe_allow_html=True)
     st.info(project.next_week_plan or "No updates yet.")
 
     st.markdown("---")
