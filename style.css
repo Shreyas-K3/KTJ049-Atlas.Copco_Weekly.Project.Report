@@ -1,1 +1,75 @@
+/* Import Font - Ensure the file exists in app/assets/fonts/ */
+@font-face {
+    font-family: 'AvantGarde';
+    src: url('app/assets/fonts/AvantGarde.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
 
+/* Global Basics */
+body {
+    background-color: #000000;
+    color: #FFFFFF;
+    font-family: 'AvantGarde', sans-serif;
+}
+
+.stApp {
+    background-color: #000000;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'AvantGarde', sans-serif !important;
+    color: #FFFFFF !important;
+}
+
+/* Brand Colors */
+/* Red Accents */
+.stButton > button {
+    background-color: #FF0000 !important;
+    color: #FFFFFF !important;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+.stButton > button:hover {
+    background-color: #CC0000 !important;
+}
+
+/* Cards / Metrics */
+div[data-testid="stMetric"] {
+    background-color: #1a1a1a;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #cccccc !important;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #FFFFFF !important;
+}
+
+/* Progress Bar - Green */
+.stProgress > div > div > div > div {
+    background-color: #00C853 !important;
+}
+
+/* Links */
+a {
+    color: #FF0000 !important;
+    text-decoration: none;
+}
+
+/* Alert Note */
+.alert-box {
+    background-color: #220000;
+    border-left: 5px solid #FF0000;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+}
